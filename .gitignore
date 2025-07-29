@@ -1,0 +1,8 @@
+# VS Code settings folder
+.vscode/
+
+# Binary folder
+bin/
+
+# Compiled object files
+*.o
