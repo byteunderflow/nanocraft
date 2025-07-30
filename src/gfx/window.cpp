@@ -23,7 +23,7 @@ void onerror(int errorcode, const char *description)
 
 void onkey(GLFWwindow *handle, int key, int scancode, int action, int mods)
 {
-    glfwSetWindowShouldClose(handle, key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE);
+    glfwSetWindowShouldClose(handle, key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE);   
 }
 
 void Window::create()
