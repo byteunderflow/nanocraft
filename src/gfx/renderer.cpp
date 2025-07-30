@@ -10,7 +10,12 @@ Renderer::~Renderer()
     
 }
 
-void Renderer::render()
+void Renderer::init() const
+{
+    
+}
+
+void Renderer::render() const
 {
     
 }

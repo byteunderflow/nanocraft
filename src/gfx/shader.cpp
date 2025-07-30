@@ -10,13 +10,13 @@ Shader::~Shader()
     glDeleteShader(handle);
 }
 
-bool Shader::compile(const char *path) const
+void Shader::compile(const char *path) const
 {
     std::ifstream file(path, std::ios::binary | std::ios::ate);
     if (!file)
     {
         std::cerr << "Unable to open file " << path << std::endl;
-        return false;
+        exit(EXIT_FAILURE);
     }
 
     std::streamsize size = file.tellg();
@@ -26,7 +26,7 @@ bool Shader::compile(const char *path) const
     if (!file.read(buffer.get(), size))
     {
         std::cerr << "Unable to read file " << path << std::endl;
-        return false;
+        exit(EXIT_FAILURE);
     }
 
     buffer[size] = 0;
@@ -42,8 +42,6 @@ bool Shader::compile(const char *path) const
         char log[512];
         glGetShaderInfoLog(handle, sizeof(log), nullptr, log);
         std::cerr << "Unable to compile file " << path << ": " << log;
-        return false;
+        exit(EXIT_FAILURE);
     }
-
-    return true;
 }

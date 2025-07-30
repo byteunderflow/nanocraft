@@ -1,15 +1,16 @@
 #pragma once
 
 #include <glad/glad.h>
+#include <iostream>
 
-class VBO
+class Texture
 {
 public:
-    VBO();
-    ~VBO();
-    void fill(const float *data, const GLsizeiptr size) const;
+    Texture();
+    ~Texture();
     void bind() const;
     void unbind() const;
+    void load(const char *path) const;
 
 private:
     GLuint handle;

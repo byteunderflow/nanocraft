@@ -1,7 +1,7 @@
 CC = clang
 CXXC = clang++
 CXXFLAGS = -std=c++20 -g -Wall -Wextra -Wpedantic -Wstrict-aliasing
-CXXFLAGS += -Ilib/glad/include -Ilib/glfw/include -Ilib/glm
+CXXFLAGS += -Ilib/glad/include -Ilib/glfw/include -Ilib/glm -Ilib/stb
 LDFLAGS = lib/glad/glad.o lib/glfw/build/src/libglfw3.a -lgdi32
 
 SRC = $(wildcard src/*.cpp) $(wildcard src/**/*.cpp)

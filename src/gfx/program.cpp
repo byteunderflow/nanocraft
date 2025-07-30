@@ -15,7 +15,7 @@ void Program::attach(Shader *shader) const
     glAttachShader(handle, shader->handle);
 }
 
-bool Program::link() const
+void Program::link() const
 {
     glLinkProgram(handle);
 
@@ -26,10 +26,8 @@ bool Program::link() const
         char log[512];
         glGetProgramInfoLog(handle, sizeof(log), nullptr, log);
         std::cerr << "Unable to link program: " << log;
-        return false;
+        exit(EXIT_FAILURE);
     }
-
-    return true;
 }
 
 void Program::bind() const

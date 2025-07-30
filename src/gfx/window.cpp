@@ -57,13 +57,10 @@ void Window::create()
         std::cerr << "Unable to retrieve video mode" << std::endl;
         exit(EXIT_FAILURE);
     }
-
     glfwSetWindowPos(handle, (mode->width - WIDTH) / 2, (mode->height - HEIGHT) / 2);
-
     glfwSetKeyCallback(handle, onkey);
 
     glfwMakeContextCurrent(handle);
-
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cerr << "Unable to load GLAD" << std::endl;
@@ -96,24 +93,14 @@ void Window::run()
     vao.bind();
 
     float vertices[] = {
-        0.5f, 0.5f, 0.0f,   // top right
-        0.5f, -0.5f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f, // bottom left
-        -0.5f, 0.5f, 0.0f   // top left
+        -0.5f, -0.5f, 0.0f,
+        0.0f, 0.5f, 0.0f,
+        0.5f, -0.5f, 0.0f
     };
 
     VBO vbo;
     vbo.bind();
     vbo.fill(vertices, sizeof(vertices));
-
-    GLuint indices[] = {
-        3, 0, 1, // first triangle
-        3, 2, 1  // second triangle
-    };
-
-    EBO ebo;
-    ebo.bind();
-    ebo.fill(indices, sizeof(indices));
 
     program.bind();
 
@@ -123,9 +110,8 @@ void Window::run()
         glViewport(0, 0, width, height);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        
-        program.uniform("color", glm::vec4(sinf((float) glfwGetTime()) / 2.0f + 0.5f, 0.0f, 1.0f, 1.0f));
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        glDrawArrays(GL_TRIANGLES, 0, 3);
 
         glfwSwapBuffers(handle);
         glfwPollEvents();

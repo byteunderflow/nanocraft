@@ -9,6 +9,7 @@ public:
     ~VAO();
     void bind() const;
     void unbind() const;
+
 private:
     GLuint handle;
 };

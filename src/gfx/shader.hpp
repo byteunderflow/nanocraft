@@ -11,5 +11,5 @@ public:
 
     Shader(GLenum type);
     ~Shader();
-    bool compile(const char *path) const;
+    void compile(const char *path) const;
 };

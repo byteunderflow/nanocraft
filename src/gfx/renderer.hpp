@@ -5,5 +5,6 @@ class Renderer
 public:
     Renderer();
     ~Renderer();
-    void render();
+    void init() const;
+    void render() const;
 };
