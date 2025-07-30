@@ -8,5 +8,4 @@ bin/
 *.o
 
 # Git files
-.gitignore
 .gitmodules
