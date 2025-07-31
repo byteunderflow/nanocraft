@@ -6,6 +6,3 @@ bin/
 
 # Compiled object files
 *.o
-
-# Git files
-.gitmodules
