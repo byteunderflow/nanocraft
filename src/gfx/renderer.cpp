@@ -13,7 +13,7 @@ void Renderer::init() const
     // DEBUG
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    texture.load("res/textures/textures.png");
+    texture.load("res/textures/grass.png");
     texture.bind();
 
     Shader vs(GL_VERTEX_SHADER);
