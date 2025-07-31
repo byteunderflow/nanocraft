@@ -45,14 +45,14 @@ void Window::create()
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
     handle = glfwCreateWindow(WIDTH, HEIGHT, TITLE, nullptr, nullptr);
-    if (handle == nullptr)
+    if (!handle)
     {
         std::cerr << "Unable to create window" << std::endl;
         exit(EXIT_FAILURE);
     }
 
     const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-    if (mode == nullptr)
+    if (!mode)
     {
         std::cerr << "Unable to retrieve video mode" << std::endl;
         exit(EXIT_FAILURE);
@@ -67,51 +67,23 @@ void Window::create()
         exit(EXIT_FAILURE);
     }
 
+    renderer = std::make_unique<Renderer>();
+    renderer->init();
+
     glfwSwapInterval(1);
     glfwShowWindow(handle);
 }
 
 void Window::run()
 {
-    // DEBUG
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-    Program program;
-    {
-        Shader vs(GL_VERTEX_SHADER);
-        vs.compile("res/shaders/default.vs");
-
-        Shader fs(GL_FRAGMENT_SHADER);
-        fs.compile("res/shaders/default.fs");
-
-        program.attach(&vs);
-        program.attach(&fs);
-        program.link();
-    }
-
-    VAO vao;
-    vao.bind();
-
-    float vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-        0.0f, 0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f
-    };
-
-    VBO vbo;
-    vbo.bind();
-    vbo.fill(vertices, sizeof(vertices));
-
-    program.bind();
-
     while (!glfwWindowShouldClose(handle))
     {
         glfwGetFramebufferSize(handle, &width, &height);
         glViewport(0, 0, width, height);
+
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        renderer->render();
 
         glfwSwapBuffers(handle);
         glfwPollEvents();

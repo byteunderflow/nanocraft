@@ -20,15 +20,21 @@ void Texture::bind() const
 
 void Texture::unbind() const
 {
-    glBindTexture(GL_TEXTURE_2D, handle);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Texture::load(const char *path) const
 {
+    bind();
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
     int width;
     int height;
     int nchannels;
-
     stbi_uc *data = stbi_load(path, &width, &height, &nchannels, 0);
     if (!data)
     {
@@ -36,9 +42,10 @@ void Texture::load(const char *path) const
         exit(EXIT_FAILURE);
     }
 
-    // Note: Change pixel format to GL_RGBA when dealing with transparency
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
 
     stbi_image_free(data);
+
+    unbind();
 }

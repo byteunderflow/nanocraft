@@ -2,10 +2,12 @@
 
 #define HEIGHT 540
 #define WIDTH HEIGHT * 16 / 9
-#define TITLE "Minecraft"
+#define TITLE "nanocraft"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <memory>
+#include "renderer.hpp"
 
 class Window
 {
@@ -19,4 +21,5 @@ private:
     GLFWwindow *handle;
     int width;
     int height;
+    std::unique_ptr<Renderer> renderer;
 };
