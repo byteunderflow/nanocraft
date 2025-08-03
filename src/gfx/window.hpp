@@ -4,15 +4,12 @@
 #define WIDTH HEIGHT * 16 / 9
 #define TITLE "nanocraft"
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <memory>
 #include "renderer.hpp"
 
 class Window
 {
 public:
-    Window();
+    Window() = default;
     ~Window();
     void create();
     void run();

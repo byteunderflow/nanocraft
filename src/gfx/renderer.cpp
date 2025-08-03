@@ -1,18 +1,12 @@
 #include "renderer.hpp"
 
-Renderer::Renderer()
-{
-}
-
-Renderer::~Renderer()
-{
-}
-
 void Renderer::init()
 {
     glEnable(GL_DEPTH_TEST);
     // DEBUG
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    camera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 1.0f));
 
     texture.bind(GL_TEXTURE0);
     texture.load("res/textures/grass.png", GL_RGBA);
@@ -91,7 +85,10 @@ void Renderer::init()
 void Renderer::render(int width, int height) const
 {
     if (width <= 0 && height <= 0)
+    {
         return;
+    }
+    glViewport(0, 0, width, height);
 
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));

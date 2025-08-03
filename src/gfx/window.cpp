@@ -5,10 +5,6 @@
 #include "vao.hpp"
 #include "ebo.hpp"
 
-#include <iostream>
-
-Window::Window() {}
-
 Window::~Window()
 {
     glfwDestroyWindow(handle);
@@ -85,8 +81,6 @@ void Window::run()
     while (!glfwWindowShouldClose(handle))
     {
         glfwGetFramebufferSize(handle, &width, &height);
-        glViewport(0, 0, width, height);
-
         renderer->render(width, height);
 
         frames++;

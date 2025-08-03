@@ -15,8 +15,8 @@
 class Renderer
 {
 public:
-    Renderer();
-    ~Renderer();
+    Renderer() = default;
+    ~Renderer() = default;
     void init();
     void render(int width, int height) const;
 
@@ -26,4 +26,5 @@ private:
     VBO vbo;
     EBO ebo;
     Texture texture;
+    std::unique_ptr<Camera> camera;
 };

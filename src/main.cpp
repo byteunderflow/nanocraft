@@ -1,10 +1,10 @@
-#include <cstdlib>
-#include "gfx/state.hpp"
+#include "gfx/window.hpp"
 
 int main()
 {
-    State::state.init();
-    State::state.window->run();
+    Window window;
+    window.create();
+    window.run();
 
     return EXIT_SUCCESS;
 }
