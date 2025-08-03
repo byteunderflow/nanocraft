@@ -13,8 +13,10 @@ Texture::~Texture()
     glDeleteTextures(1, &handle);
 }
 
-void Texture::bind() const
+void Texture::bind(GLenum unit)
 {
+    this->unit = unit;
+    glActiveTexture(unit);
     glBindTexture(GL_TEXTURE_2D, handle);
 }
 
@@ -23,11 +25,9 @@ void Texture::unbind() const
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void Texture::load(const char *path) const
+void Texture::load(const char *path, GLenum format) const
 {
     stbi_set_flip_vertically_on_load(true);
-
-    bind();
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -36,18 +36,16 @@ void Texture::load(const char *path) const
 
     int width;
     int height;
-    int nchannels;
-    stbi_uc *data = stbi_load(path, &width, &height, &nchannels, 0);
+    int channels;
+    stbi_uc *data = stbi_load(path, &width, &height, &channels, 0);
     if (!data)
     {
-        std::cerr << "Unable to load texture " << path << std::endl;
+        std::cerr << "Unable to load texture " << path << ": " << stbi_failure_reason() << std::endl;
         exit(EXIT_FAILURE);
     }
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
 
     stbi_image_free(data);
-
-    unbind();
 }

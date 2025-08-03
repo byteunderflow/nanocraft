@@ -1,9 +1,7 @@
 #pragma once
 
-// #define HEIGHT 540
-// #define WIDTH HEIGHT * 16 / 9
-#define HEIGHT 512
-#define WIDTH 512
+#define HEIGHT 540
+#define WIDTH HEIGHT * 16 / 9
 #define TITLE "nanocraft"
 
 #include <glad/glad.h>
@@ -21,7 +19,5 @@ public:
 
 private:
     GLFWwindow *handle;
-    int width;
-    int height;
     std::unique_ptr<Renderer> renderer;
 };

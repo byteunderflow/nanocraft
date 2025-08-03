@@ -6,11 +6,13 @@
 class Texture
 {
 public:
+    GLenum unit;
+
     Texture();
     ~Texture();
-    void bind() const;
+    void bind(GLenum unit);
     void unbind() const;
-    void load(const char *path) const;
+    void load(const char *path, GLenum format) const;
 
 private:
     GLuint handle;

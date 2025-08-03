@@ -23,7 +23,7 @@ void onerror(int errorcode, const char *description)
 
 void onkey(GLFWwindow *handle, int key, int scancode, int action, int mods)
 {
-    glfwSetWindowShouldClose(handle, key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE);   
+    glfwSetWindowShouldClose(handle, key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE);
 }
 
 void Window::create()
@@ -76,14 +76,27 @@ void Window::create()
 
 void Window::run()
 {
+    int width;
+    int height;
+
+    double time;
+    int frames;
+
     while (!glfwWindowShouldClose(handle))
     {
         glfwGetFramebufferSize(handle, &width, &height);
         glViewport(0, 0, width, height);
 
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-        renderer->render();
+        renderer->render(width, height);
+
+        frames++;
+        const double now = glfwGetTime();
+        if (now - time >= 1.0)
+        {
+            std::cout << "fps: " << frames << std::endl;
+            time = now;
+            frames = 0;
+        }
 
         glfwSwapBuffers(handle);
         glfwPollEvents();
