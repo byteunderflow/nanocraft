@@ -7,24 +7,25 @@
 #include "program.hpp"
 #include "camera.hpp"
 
-#include <GLFW/glfw3.h>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+class Camera;
+class Window;
 
 class Renderer
 {
 public:
-    Renderer() = default;
+    Renderer(const Window *window) : window(window) {};
     ~Renderer() = default;
     void init();
-    void render(int width, int height) const;
+    void render() const;
 
 private:
+    const Window *window;
     Program program;
     VAO vao;
     VBO vbo;
     EBO ebo;
     Texture texture;
-    std::unique_ptr<Camera> camera;
 };

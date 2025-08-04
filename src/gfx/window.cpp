@@ -1,9 +1,4 @@
 #include "window.hpp"
-#include "shader.hpp"
-#include "program.hpp"
-#include "vbo.hpp"
-#include "vao.hpp"
-#include "ebo.hpp"
 
 Window::~Window()
 {
@@ -12,19 +7,10 @@ Window::~Window()
     glfwTerminate();
 }
 
-void onerror(int errorcode, const char *description)
-{
-    std::cerr << errorcode << ": " << description << std::endl;
-}
-
-void onkey(GLFWwindow *handle, int key, int scancode, int action, int mods)
-{
-    glfwSetWindowShouldClose(handle, key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE);
-}
-
 void Window::create()
 {
-    glfwSetErrorCallback(onerror);
+    glfwSetErrorCallback([](int errorcode, const char *description)
+                         { std::cerr << errorcode << ": " << description << std::endl; });
 
     if (!glfwInit())
     {
@@ -47,15 +33,6 @@ void Window::create()
         exit(EXIT_FAILURE);
     }
 
-    const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-    if (!mode)
-    {
-        std::cerr << "Unable to retrieve video mode" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    glfwSetWindowPos(handle, (mode->width - WIDTH) / 2, (mode->height - HEIGHT) / 2);
-    glfwSetKeyCallback(handle, onkey);
-
     glfwMakeContextCurrent(handle);
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -63,36 +40,82 @@ void Window::create()
         exit(EXIT_FAILURE);
     }
 
-    renderer = std::make_unique<Renderer>();
+    glfwSetWindowUserPointer(handle, this);
+
+    const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+    if (!mode)
+    {
+        std::cerr << "Unable to retrieve video mode" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    glfwSetWindowPos(handle, (mode->width - WIDTH) / 2, (mode->height - HEIGHT) / 2);
+
+    mouse = std::make_unique<Mouse>(WIDTH / 2.0, HEIGHT / 2.0);
+    glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPos(handle, WIDTH / 2.0, HEIGHT / 2.0);
+    glfwSetCursorPosCallback(handle, [](GLFWwindow *window, double x, double y)
+                             { ((Window *)glfwGetWindowUserPointer(window))->move(x, y); });
+
+    camera = std::make_unique<Camera>(this);
+    camera->init();
+
+    renderer = std::make_unique<Renderer>(this);
     renderer->init();
 
-    glfwSwapInterval(1);
+    glfwSwapInterval(0);
     glfwShowWindow(handle);
 }
 
 void Window::run()
 {
-    int width;
-    int height;
-
-    double time;
-    int frames;
-
+    double time = glfwGetTime();
     while (!glfwWindowShouldClose(handle))
     {
-        glfwGetFramebufferSize(handle, &width, &height);
-        renderer->render(width, height);
-
-        frames++;
         const double now = glfwGetTime();
-        if (now - time >= 1.0)
-        {
-            std::cout << "fps: " << frames << std::endl;
-            time = now;
-            frames = 0;
-        }
+        delta = static_cast<float>(now - time);
+        time = now;
+
+        glfwGetFramebufferSize(handle, &width, &height);
+        camera->update();
+        renderer->render();
 
         glfwSwapBuffers(handle);
         glfwPollEvents();
+
+        input();
     }
+}
+
+void Window::input()
+{
+    if (glfwGetKey(handle, GLFW_KEY_W))
+    {
+        camera->moveForward();
+    }
+    if (glfwGetKey(handle, GLFW_KEY_S))
+    {
+        camera->moveBackward();
+    }
+    if (glfwGetKey(handle, GLFW_KEY_A))
+    {
+        camera->moveLeft();
+    }
+    if (glfwGetKey(handle, GLFW_KEY_D))
+    {
+        camera->moveRight();
+    }
+    if (glfwGetKey(handle, GLFW_KEY_SPACE))
+    {
+        camera->moveUpward();
+    }
+    if (glfwGetKey(handle, GLFW_KEY_LEFT_SHIFT))
+    {
+        camera->moveDownward();
+    }
+}
+
+void Window::move(double x, double y)
+{
+    mouse->update(static_cast<float>(x), static_cast<float>(y));
+    camera->move();
 }

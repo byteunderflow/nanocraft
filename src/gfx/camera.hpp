@@ -1,12 +1,32 @@
 #pragma once
 
-#include <glm/glm.hpp>
+#include "window.hpp"
+
+class Window;
 
 class Camera
 {
 public:
-    glm::vec3 position;
+    float speed;
+    float yaw;
+    float pitch;
+    glm::mat4 view;
 
-    Camera(glm::vec3 position) : position(position) {};
+    Camera(const Window *window) : window(window) {};
     ~Camera() = default;
+    void init();
+    void moveForward();
+    void moveBackward();
+    void moveLeft();
+    void moveRight();
+    void moveUpward();
+    void moveDownward();
+    void move();
+    void update();
+
+private:
+    const Window *window;
+    glm::vec3 position;
+    glm::vec3 front;
+    glm::vec3 up;
 };
