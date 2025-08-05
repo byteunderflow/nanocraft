@@ -4,9 +4,8 @@
 #include <iostream>
 #include <fstream>
 
-class Shader
+struct Shader
 {
-public:
     GLuint handle;
 
     Shader(GLenum type);

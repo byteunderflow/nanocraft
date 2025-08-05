@@ -2,14 +2,12 @@
 
 #include <glad/glad.h>
 
-class VAO
+struct VAO
 {
-public:
+    GLuint handle;
+
     VAO();
     ~VAO();
     void bind() const;
     void unbind() const;
-
-private:
-    GLuint handle;
 };

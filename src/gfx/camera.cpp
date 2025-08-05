@@ -2,7 +2,7 @@
 
 void Camera::init()
 {
-    speed = 5.0f;
+    settings.speed = 5.0f;
     yaw = -90.0f;
     pitch = 0.0f;
     position = glm::vec3(0.0f, 0.0f, 3.0f);
@@ -10,40 +10,40 @@ void Camera::init()
     up = glm::vec3(0.0f, 1.0f, 0.0f);
 }
 
-void Camera::moveForward()
+void Camera::moveForward(float delta)
 {
-    position += window->delta * speed * front;
+    position += delta * settings.speed * front;
 }
 
-void Camera::moveBackward()
+void Camera::moveBackward(float delta)
 {
-    position -= window->delta * speed * front;
+    position -= delta * settings.speed * front;
 }
 
-void Camera::moveLeft()
+void Camera::moveLeft(float delta)
 {
-    position -= glm::normalize(glm::cross(front, up)) * window->delta * speed;
+    position -= glm::normalize(glm::cross(front, up)) * delta * settings.speed;
 }
 
-void Camera::moveRight()
+void Camera::moveRight(float delta)
 {
-    position += glm::normalize(glm::cross(front, up)) * window->delta * speed;
+    position += glm::normalize(glm::cross(front, up)) * delta * settings.speed;
 }
 
-void Camera::moveUpward()
+void Camera::moveUpward(float delta)
 {
-    position += up * window->delta * speed;
+    position += up * delta * settings.speed;
 }
 
-void Camera::moveDownward()
+void Camera::moveDownward(float delta)
 {
-    position -= up * window->delta * speed;
+    position -= up * delta * settings.speed;
 }
 
-void Camera::move()
+void Camera::move(float xoffset, float yoffset)
 {
-    yaw += window->mouse->xoffset;
-    pitch += window->mouse->yoffset;
+    yaw += xoffset;
+    pitch += yoffset;
 
     if (pitch > 89.0f)
     {
@@ -61,7 +61,7 @@ void Camera::move()
     front = glm::normalize(direction);
 }
 
-void Camera::update()
+void Camera::update(glm::mat4 &view)
 {
     view = glm::lookAt(position, position + front, up);
 }

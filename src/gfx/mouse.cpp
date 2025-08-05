@@ -13,6 +13,6 @@ void Mouse::update(float x, float y)
     yoffset = lasty - y;
     lastx = x;
     lasty = y;
-    xoffset *= sensitivity;
-    yoffset *= sensitivity;
+    xoffset *= settings.sensitivity;
+    yoffset *= settings.sensitivity;
 }

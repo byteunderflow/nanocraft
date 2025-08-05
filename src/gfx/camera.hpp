@@ -1,32 +1,29 @@
 #pragma once
 
-#include "window.hpp"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
-class Window;
-
-class Camera
+struct Camera
 {
-public:
-    float speed;
     float yaw;
     float pitch;
-    glm::mat4 view;
-
-    Camera(const Window *window) : window(window) {};
-    ~Camera() = default;
-    void init();
-    void moveForward();
-    void moveBackward();
-    void moveLeft();
-    void moveRight();
-    void moveUpward();
-    void moveDownward();
-    void move();
-    void update();
-
-private:
-    const Window *window;
     glm::vec3 position;
     glm::vec3 front;
     glm::vec3 up;
+
+    struct Settings
+    {
+        float speed;
+    };
+    Settings settings;
+
+    void init();
+    void moveForward(float delta);
+    void moveBackward(float delta);
+    void moveLeft(float delta);
+    void moveRight(float delta);
+    void moveUpward(float delta);
+    void moveDownward(float delta);
+    void move(float xoffset, float yoffset);
+    void update(glm::mat4 &view);
 };

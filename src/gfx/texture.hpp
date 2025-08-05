@@ -3,9 +3,9 @@
 #include <glad/glad.h>
 #include <iostream>
 
-class Texture
+struct Texture
 {
-public:
+    GLuint handle;
     GLenum unit;
 
     Texture();
@@ -13,7 +13,4 @@ public:
     void bind(GLenum unit);
     void unbind() const;
     void load(const char *path, GLenum format) const;
-
-private:
-    GLuint handle;
 };

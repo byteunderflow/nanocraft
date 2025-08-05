@@ -2,15 +2,13 @@
 
 #include <glad/glad.h>
 
-class VBO
+struct VBO
 {
-public:
+    GLuint handle;
+
     VBO();
     ~VBO();
     void fill(const float *data, const GLsizeiptr size) const;
     void bind() const;
     void unbind() const;
-
-private:
-    GLuint handle;
 };
