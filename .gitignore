@@ -4,8 +4,8 @@
 # Binary folder
 bin/
 
-# GIMP project file
-res/textures/textures.xcf
-
 # Compiled object files
 *.o
+
+# ImGui file
+/imgui.ini
