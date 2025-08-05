@@ -13,7 +13,7 @@ struct Camera
 
     struct Settings
     {
-        float speed;
+        float speed = 10.0f;
     };
     Settings settings;
 

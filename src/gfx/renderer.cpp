@@ -3,8 +3,6 @@
 void Renderer::init()
 {
     glEnable(GL_DEPTH_TEST);
-    // DEBUG
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     // Setup vertex shader
     Shader vs(GL_VERTEX_SHADER);
@@ -130,6 +128,7 @@ void Renderer::render(int width, int height)
     glViewport(0, 0, width, height);
     glClearColor(0.5f, 0.85f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glPolygonMode(GL_FRONT_AND_BACK, settings.wireframe ? GL_LINE : GL_FILL);
 
     for (float x = -10.0f; x < 10.0f; ++x)
     {

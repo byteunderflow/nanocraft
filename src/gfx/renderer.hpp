@@ -21,6 +21,7 @@ struct Renderer
     
     struct Settings
     {
+        bool wireframe = false;
         float fov = 60.0f;
         float near = 0.1f;
         float far = 100.0f;
