@@ -1,12 +1,14 @@
 #pragma once
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "atlas.hpp"
 #include "vao.hpp"
 #include "vbo.hpp"
 #include "program.hpp"
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include "../game/world.hpp"
 
 struct Renderer
 {
@@ -18,7 +20,7 @@ struct Renderer
     glm::mat4 model;
     glm::mat4 view;
     glm::mat4 projection;
-    
+
     struct Settings
     {
         bool wireframe = false;
@@ -29,7 +31,8 @@ struct Renderer
     Settings settings;
 
     void init();
-    void renderBlock(float x, float y, float z, BlockType type);
-    void renderChunk();
-    void render(int width, int height);
+    void renderBlock(float x, float y, float z, Block block);
+    void renderChunk(Chunk &chunk);
+    void renderWorld(World &world);
+    void render(int width, int height, World &world);
 };

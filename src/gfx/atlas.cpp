@@ -7,7 +7,7 @@ void Atlas::load(const char *path) const
 
 void Atlas::compute(BlockType type, BlockFace face, TextureCoordinates& coordinates) const
 {
-    const int row = static_cast<int>(type);
+    const int row = static_cast<int>(type) - 1;
     const int column = static_cast<int>(face);
 
     coordinates.u1 = column * TILE_WIDTH;

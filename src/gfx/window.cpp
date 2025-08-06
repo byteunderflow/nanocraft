@@ -74,7 +74,6 @@ void Window::create(int width, int height, const char *title)
     }
 
     // Setup mouse input
-    mouse = std::make_unique<Mouse>(width / 2.0f, height / 2.0f);
     glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPos(handle, width / 2.0, height / 2.0);
     glfwSetCursorPosCallback(handle, [](GLFWwindow *handle, double x, double y)
@@ -85,48 +84,17 @@ void Window::create(int width, int height, const char *title)
         else
             window->move(x, y); });
 
-    // Setup camera
-    camera = std::make_unique<Camera>();
-    camera->init();
-
-    // Setup camera
-    renderer = std::make_unique<Renderer>();
-    renderer->init();
-
     glfwSwapInterval(settings.vsync ? 1 : 0);
     glfwShowWindow(handle);
 }
 
-void Window::pause()
-{
-    if (state.paused)
-        return;
-
-    state.paused = true;
-    glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-}
-
-void Window::resume()
-{
-    if (!state.paused)
-        return;
-
-    state.paused = false;
-    glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    mouse->first = true;
-}
-
 void Window::run()
 {
-    int width;
-    int height;
-
     while (!glfwWindowShouldClose(handle))
     {
         // Process input
         glfwPollEvents();
         input();
-        camera->update(renderer->view);
 
         // Timing
         const float now = static_cast<float>(glfwGetTime());
@@ -141,22 +109,30 @@ void Window::run()
             time.lastframe = now;
         }
 
-        // Render world
+        // Update game
+        game->update();
+
+        // Render game
         glfwGetFramebufferSize(handle, &width, &height);
-        renderer->render(width, height);
+        renderer->render(width, height, game->world);
 
         // Render debug information
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
+        ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
         ImGui::Begin("Debug", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
         ImGui::Text("Resolution: %dx%d", width, height);
         ImGui::Text("FPS: %d", time.fps);
-        ImGui::Text("Delta: %.2fms", time.delta * 1000.0f);
-        ImGui::Text("XYZ: %f %f %f", camera->position.x, camera->position.y, camera->position.z);
-        ImGui::Text("Yaw: %fdeg", camera->yaw);
-        ImGui::Text("Pitch: %fdeg", camera->pitch);
+        ImGui::Text("Render: %.2fms", time.delta * 1000.0f);
+        ImGui::Text("XYZ: %f %f %f", game->world.player.position.x, game->world.player.position.y, game->world.player.position.z);
+        ImGui::Text("Yaw: %fdeg", game->world.player.yaw);
+        ImGui::Text("Pitch: %fdeg", game->world.player.pitch);
+
+        ImGui::SliderFloat("Sensitivity", &mouse.settings.sensitivity, 0.1f, 1.0f);
+        ImGui::SliderFloat("FOV (deg)", &renderer->settings.fov, 0.0f, 120.0f);
+        ImGui::SliderFloat("Speed", &game->world.player.speed, 0.0f, 20.0f);
 
         if (ImGui::Button("Wireframe"))
         {
@@ -176,37 +152,72 @@ void Window::run()
     }
 }
 
+void Window::pause()
+{
+    if (state.paused)
+        return;
+    state.paused = true;
+
+    glfwSetCursorPos(handle, width / 2.0, height / 2.0);
+    glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+}
+
+void Window::resume()
+{
+    if (!state.paused)
+        return;
+    state.paused = false;
+
+    glfwSetCursorPos(handle, width / 2.0, height / 2.0);
+    glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    mouse.enter = true;
+}
+
 void Window::input()
 {
     // State
-    if (glfwGetKey(handle, GLFW_KEY_P))
+    if (glfwGetKey(handle, GLFW_KEY_1))
         pause();
-    if (glfwGetKey(handle, GLFW_KEY_R))
+    if (glfwGetKey(handle, GLFW_KEY_2))
         resume();
 
     if (state.paused)
         return;
 
-    // Camera movement
+    // Player movement
     if (glfwGetKey(handle, GLFW_KEY_W))
-        camera->moveForward(time.delta);
+        game->world.player.forward(time.delta);
     if (glfwGetKey(handle, GLFW_KEY_S))
-        camera->moveBackward(time.delta);
+        game->world.player.backward(time.delta);
     if (glfwGetKey(handle, GLFW_KEY_A))
-        camera->moveLeft(time.delta);
+        game->world.player.left(time.delta);
     if (glfwGetKey(handle, GLFW_KEY_D))
-        camera->moveRight(time.delta);
+        game->world.player.right(time.delta);
     if (glfwGetKey(handle, GLFW_KEY_SPACE))
-        camera->moveUpward(time.delta);
+        game->world.player.upward(time.delta);
     if (glfwGetKey(handle, GLFW_KEY_LEFT_SHIFT))
-        camera->moveDownward(time.delta);
+        game->world.player.downward(time.delta);
 }
 
-void Window::move(double x, double y)
+void Window::move(double ix, double iy)
 {
     if (state.paused)
         return;
 
-    mouse->update(static_cast<float>(x), static_cast<float>(y));
-    camera->move(mouse->xoffset, mouse->yoffset);
+    const float x = static_cast<float>(ix);
+    const float y = static_cast<float>(iy);
+
+    if (mouse.enter)
+    {
+        mouse.lastx = x;
+        mouse.lasty = y;
+        mouse.enter = false;
+    }
+
+    const float xoffset = (x - mouse.lastx) * mouse.settings.sensitivity;
+    const float yoffset = (mouse.lasty - y) * mouse.settings.sensitivity;
+    mouse.lastx = x;
+    mouse.lasty = y;
+
+    game->world.player.look(xoffset, yoffset);
 }

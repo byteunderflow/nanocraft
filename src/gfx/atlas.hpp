@@ -2,7 +2,6 @@
 
 #include "texture.hpp"
 #include "../game/block.hpp"
-#include <glad/glad.h>
 
 struct TextureCoordinates
 {
@@ -19,6 +18,7 @@ struct Atlas
     static constexpr GLenum FORMAT = GL_RGBA;
 
     Texture texture;
+    
     void load(const char *path) const;
     void compute(BlockType type, BlockFace face, TextureCoordinates& coordinates) const;
     void bind();

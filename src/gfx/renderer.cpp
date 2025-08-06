@@ -24,8 +24,15 @@ void Renderer::init()
     program.uniform("atlas", atlas.texture);
 }
 
-void Renderer::renderBlock(float x, float y, float z, BlockType type)
+void Renderer::renderBlock(float x, float y, float z, Block block)
 {
+    const BlockType type = getBlockType(block);
+    if (type == BlockType::AIR)
+        return;
+    
+    // const bool isSolid = getBlockFlag(block, SOLID);
+    // const bool isTransparent = getBlockFlag(block, TRANSPARENT);
+
     // Setup model matrix
     model = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, z));
     program.uniform("model", model);
@@ -107,19 +114,41 @@ void Renderer::renderBlock(float x, float y, float z, BlockType type)
     glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
-void Renderer::renderChunk()
+void Renderer::renderChunk(Chunk &chunk)
 {
+    for (int x = 0; x < CHUNK_X; ++x)
+    {
+        for (int y = 0; y < CHUNK_Y; ++y)
+        {
+            for (int z = 0; z < CHUNK_Z; ++z)
+            {
+                const Block block = chunk.getBlock(x, y, z);
+                const float bx = static_cast<float>(chunk.x + x);
+                const float by = static_cast<float>(y);
+                const float bz = static_cast<float>(chunk.z + z);
+                renderBlock(bx, by, bz, block);
+            }
+        }
+    }
 }
 
-void Renderer::render(int width, int height)
+void Renderer::renderWorld(World &world)
+{
+    for (const std::unique_ptr<Chunk> &chunk : world.chunks)
+    {
+        renderChunk(*chunk);
+    }
+}
+
+void Renderer::render(int width, int height, World &world)
 {
     if (width <= 0 || height <= 0)
     {
         return;
     }
 
-    // Setup view matrix (computed by camera)
-    program.uniform("view", view);
+    // Setup view matrix
+    program.uniform("view", world.player.view());
 
     // Setup projection matrix
     projection = glm::perspective(glm::radians(settings.fov), (float)width / height, settings.near, settings.far);
@@ -130,12 +159,5 @@ void Renderer::render(int width, int height)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glPolygonMode(GL_FRONT_AND_BACK, settings.wireframe ? GL_LINE : GL_FILL);
 
-    for (float x = -10.0f; x < 10.0f; ++x)
-    {
-        for (float z = 0.0f; z < 10.0f; ++z)
-        {
-            renderBlock(x, 0.0f, z, BlockType::GRASS);
-            renderBlock(x, -1.0f, z, BlockType::STONE);
-        }
-    }
+    renderWorld(world);
 }
