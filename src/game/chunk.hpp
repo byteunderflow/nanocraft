@@ -2,20 +2,25 @@
 
 #include "block.hpp"
 
-#define CHUNK_X 16
-#define CHUNK_Y 256
-#define CHUNK_Z 16
-#define CHUNK_SIZE CHUNK_X * CHUNK_Y * CHUNK_Z
+struct ChunkPosition
+{
+    int32 x;
+    int32 z;
+};
 
 struct Chunk
 {
-    const int x;
-    const int z;
-    Block blocks[CHUNK_X * CHUNK_Y * CHUNK_Z] = {BlockType::AIR};
+    static constexpr uint32 CHUNK_X = 16;
+    static constexpr uint32 CHUNK_Y = 128;
+    static constexpr uint32 CHUNK_Z = 16;
+    static constexpr uint32 CHUNK_SIZE = CHUNK_X * CHUNK_Y * CHUNK_Z;
 
-    Chunk(const int x, const int z) : x(x), z(z) {}
-    void setBlock(int x, int y, int z, Block block);
-    void setType(int x, int y, int z, BlockType type);
-    Block getBlock(int x, int y, int z) const;
-    BlockType getType(int x, int y, int z) const;
+    const ChunkPosition position;
+    Blocks::Block blocks[CHUNK_X * CHUNK_Y * CHUNK_Z];
+
+    Chunk(const ChunkPosition position) : position(position) {};
+    void init();
+    void update();
+    void setBlock(uint32 x, uint32 y, uint32 z, Blocks::Block block);
+    Blocks::Block getBlock(uint32 x, uint32 y, uint32 z) const;
 };

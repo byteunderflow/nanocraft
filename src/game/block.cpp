@@ -1,22 +1,15 @@
 #include "block.hpp"
 
-void setBlockType(Block &block, BlockType type)
+namespace Blocks
 {
-    block &= ~BLOCK_MASK_TYPE;
-    block |= static_cast<BlockMask>(type);
-}
+    void setType(Block &block, Type type)
+    {
+        block &= ~MASK_TYPE;
+        block |= static_cast<Mask>(type);
+    }
 
-void setBlockFlag(Block &block, BlockMask flag)
-{
-    block |= flag;
-}
-
-BlockType getBlockType(Block block)
-{
-    return static_cast<BlockType>(block & BLOCK_MASK_TYPE);
-}
-
-bool getBlockFlag(Block block, BlockMask flag)
-{
-    return static_cast<bool>(block & flag);
+    Type getType(Block block)
+    {
+        return static_cast<Type>(block & MASK_TYPE);
+    }
 }

@@ -30,24 +30,24 @@ struct Window
 
     struct Time
     {
-        float lasttime = 0.0f;
-        float delta = 0.0f;
+        float32 lasttime = 0.0f;
+        float32 delta = 0.0f;
 
-        float lastframe = 0.0f;
-        int frames = 0;
-        int fps = 0;
+        float32 lastframe = 0.0f;
+        uint32 frames = 0;
+        uint32 fps = 0;
     };
     Time time;
 
     struct Mouse
     {
         bool enter = true;
-        float lastx = 0.0f;
-        float lasty = 0.0f;
+        float32 lastx = 0.0f;
+        float32 lasty = 0.0f;
 
         struct Settings
         {
-            float sensitivity = 0.2f;
+            float32 sensitivity = 0.2f;
         };
         Settings settings;
     };

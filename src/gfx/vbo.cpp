@@ -10,7 +10,7 @@ VBO::~VBO()
     glDeleteBuffers(1, &handle);
 }
 
-void VBO::fill(const float *data, const GLsizeiptr size) const
+void VBO::fill(const void *data, const GLsizeiptr size) const
 {
     glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 }

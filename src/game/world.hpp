@@ -1,23 +1,22 @@
 #pragma once
 
-#include "worldgenerator.hpp"
-#include "player.hpp"
 #include "chunk.hpp"
+#include "player.hpp"
 
 #include <vector>
 
 struct World
 {
-    WorldGenerator generator;
     Player player;
     std::vector<std::unique_ptr<Chunk>> chunks;
 
     struct Settings
     {
+        uint64 seed;
     };
     Settings settings;
 
-    std::unique_ptr<Chunk> generateChunk(int x, int z);
+    std::unique_ptr<Chunk> generateChunk(int32 x, int32 z);
     void generate();
     void update();
 };

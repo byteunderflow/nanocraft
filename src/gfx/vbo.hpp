@@ -8,7 +8,7 @@ struct VBO
 
     VBO();
     ~VBO();
-    void fill(const float *data, const GLsizeiptr size) const;
+    void fill(const void *data, const GLsizeiptr size) const;
     void bind() const;
     void unbind() const;
 };

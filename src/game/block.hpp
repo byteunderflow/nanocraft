@@ -1,31 +1,40 @@
 #pragma once
 
-enum BlockFace
+#include "../types.hpp"
+
+namespace Blocks
 {
-    FRONT,
-    BACK,
-    LEFT,
-    RIGHT,
-    TOP,
-    BOTTOM
-};
+    enum Face : uint8
+    {
+        FRONT,
+        BACK,
+        LEFT,
+        RIGHT,
+        TOP,
+        BOTTOM
+    };
 
-enum BlockType : unsigned char
-{
-    AIR,
-    GRASS,
-    STONE,
-    BRICK
-};
+    enum Type : uint8
+    {
+        AIR,
+        GRASS,
+        STONE,
+        BRICK,
+        BEDROCK
+    };
 
-using Block = unsigned char;
-using BlockMask = unsigned char;
+    using Block = uint8;
+    using Mask = uint8;
 
-constexpr BlockMask BLOCK_MASK_TYPE = 15;
-constexpr BlockMask BLOCK_MASK_SOLID = 16;
-constexpr BlockMask BLOCK_MASK_TRANSPARENT = 32;
+    constexpr Mask MASK_TYPE = 15;
+    constexpr Mask MASK_TRANSPARENT = 16;
 
-void setBlockType(Block &block, BlockType type);
-void setBlockFlag(Block &block, BlockMask flag);
-BlockType getBlockType(Block block);
-bool getBlockFlag(Block block, BlockMask flag);
+    constexpr Block BLOCK_AIR = Type::AIR | MASK_TRANSPARENT;
+    constexpr Block BLOCK_GRASS = Type::GRASS;
+    constexpr Block BLOCK_STONE = Type::STONE;
+    constexpr Block BLOCK_BRICK = Type::BRICK;
+    constexpr Block BLOCK_BEDROCK = Type::BEDROCK;
+
+    void setType(Block &block, Type type);
+    Type getType(Block block);
+}

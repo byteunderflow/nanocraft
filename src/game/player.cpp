@@ -1,36 +1,37 @@
 #include "player.hpp"
 
-void Player::forward(float delta)
+void Player::update()
 {
-    position += delta * speed * direction;
+    chunkX = static_cast<int32>(std::floor(position.x / 16.0f));
+    chunkY = static_cast<int32>(std::floor(position.z / 16.0f));
 }
 
-void Player::backward(float delta)
+void Player::move(Movement movement, float32 delta)
 {
-    position -= delta * speed * direction;
+    switch (movement)
+    {
+    case Movement::FORWARD:
+        position += delta * speed * glm::normalize(glm::vec3(direction.x, 0.0f, direction.z));
+        break;
+    case Movement::BACKWARD:
+        position -= delta * speed * glm::normalize(glm::vec3(direction.x, 0.0f, direction.z));
+        break;
+    case Movement::LEFT:
+        position -= glm::normalize(glm::cross(direction, up)) * delta * speed;
+        break;
+    case Movement::RIGHT:
+        position += glm::normalize(glm::cross(direction, up)) * delta * speed;
+        break;
+    case Movement::UPWARD:
+        position += up * delta * speed;
+        break;
+    case Movement::DOWNWARD:
+        position -= up * delta * speed;
+        break;
+    }
 }
 
-void Player::left(float delta)
-{
-    position -= glm::normalize(glm::cross(direction, up)) * delta * speed;
-}
-
-void Player::right(float delta)
-{
-    position += glm::normalize(glm::cross(direction, up)) * delta * speed;
-}
-
-void Player::upward(float delta)
-{
-    position += up * delta * speed;
-}
-
-void Player::downward(float delta)
-{
-    position -= up * delta * speed;
-}
-
-void Player::look(float xoffset, float yoffset)
+void Player::look(float32 xoffset, float32 yoffset)
 {
     yaw += xoffset;
     pitch += yoffset;
@@ -57,9 +58,4 @@ void Player::look(float xoffset, float yoffset)
     direction.y = sin(glm::radians(pitch));
     direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
     direction = glm::normalize(direction);
-}
-
-glm::mat4 Player::view()
-{
-    return glm::lookAt(position, position + direction, up);
 }

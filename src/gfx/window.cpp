@@ -46,7 +46,6 @@ void Window::create(int width, int height, const char *title)
 
     glfwSetWindowUserPointer(handle, this);
 
-    // Set window position
     const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
     if (!mode)
     {
@@ -55,25 +54,20 @@ void Window::create(int width, int height, const char *title)
     }
     glfwSetWindowPos(handle, (mode->width - width) / 2, (mode->height - height) / 2);
 
-    // Setup ImGui
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
-
-    // Setup ImGui backends
     if (!ImGui_ImplGlfw_InitForOpenGL(handle, true))
     {
         std::cerr << "Unable to initialize ImGui-GLFW" << std::endl;
         exit(EXIT_FAILURE);
     }
-
     if (!ImGui_ImplOpenGL3_Init("#version 330 core"))
     {
         std::cerr << "Unable to initialize ImGui-OpenGL" << std::endl;
         exit(EXIT_FAILURE);
     }
 
-    // Setup mouse input
     glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPos(handle, width / 2.0, height / 2.0);
     glfwSetCursorPosCallback(handle, [](GLFWwindow *handle, double x, double y)
@@ -92,16 +86,13 @@ void Window::run()
 {
     while (!glfwWindowShouldClose(handle))
     {
-        // Process input
         glfwPollEvents();
         input();
 
-        // Timing
-        const float now = static_cast<float>(glfwGetTime());
-        time.delta = static_cast<float>(now - time.lasttime);
+        const float32 now = static_cast<float32>(glfwGetTime());
+        time.delta = static_cast<float32>(now - time.lasttime);
         time.lasttime = now;
         time.frames++;
-
         if (now - time.lastframe > 1.0f)
         {
             time.fps = time.frames;
@@ -109,14 +100,11 @@ void Window::run()
             time.lastframe = now;
         }
 
-        // Update game
         game->update();
 
-        // Render game
         glfwGetFramebufferSize(handle, &width, &height);
         renderer->render(width, height, game->world);
 
-        // Render debug information
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
@@ -126,13 +114,17 @@ void Window::run()
         ImGui::Text("Resolution: %dx%d", width, height);
         ImGui::Text("FPS: %d", time.fps);
         ImGui::Text("Render: %.2fms", time.delta * 1000.0f);
+
         ImGui::Text("XYZ: %f %f %f", game->world.player.position.x, game->world.player.position.y, game->world.player.position.z);
+        ImGui::Text("Chunk XZ: %d %d", game->world.player.chunkX, game->world.player.chunkY);
         ImGui::Text("Yaw: %fdeg", game->world.player.yaw);
         ImGui::Text("Pitch: %fdeg", game->world.player.pitch);
 
         ImGui::SliderFloat("Sensitivity", &mouse.settings.sensitivity, 0.1f, 1.0f);
-        ImGui::SliderFloat("FOV (deg)", &renderer->settings.fov, 0.0f, 120.0f);
         ImGui::SliderFloat("Speed", &game->world.player.speed, 0.0f, 20.0f);
+        ImGui::SliderFloat("FOV (deg)", &renderer->settings.fov, 0.0f, 150.0f);
+        ImGui::SliderFloat("Near plane", &renderer->settings.near, 0.1f, 1.0f);
+        ImGui::SliderFloat("Far plane", &renderer->settings.far, 10.0f, 1000.0f);
 
         if (ImGui::Button("Wireframe"))
         {
@@ -175,7 +167,6 @@ void Window::resume()
 
 void Window::input()
 {
-    // State
     if (glfwGetKey(handle, GLFW_KEY_1))
         pause();
     if (glfwGetKey(handle, GLFW_KEY_2))
@@ -184,19 +175,18 @@ void Window::input()
     if (state.paused)
         return;
 
-    // Player movement
     if (glfwGetKey(handle, GLFW_KEY_W))
-        game->world.player.forward(time.delta);
+        game->world.player.move(Movement::FORWARD, time.delta);
     if (glfwGetKey(handle, GLFW_KEY_S))
-        game->world.player.backward(time.delta);
+        game->world.player.move(Movement::BACKWARD, time.delta);
     if (glfwGetKey(handle, GLFW_KEY_A))
-        game->world.player.left(time.delta);
+        game->world.player.move(Movement::LEFT, time.delta);
     if (glfwGetKey(handle, GLFW_KEY_D))
-        game->world.player.right(time.delta);
+        game->world.player.move(Movement::RIGHT, time.delta);
     if (glfwGetKey(handle, GLFW_KEY_SPACE))
-        game->world.player.upward(time.delta);
+        game->world.player.move(Movement::UPWARD, time.delta);
     if (glfwGetKey(handle, GLFW_KEY_LEFT_SHIFT))
-        game->world.player.downward(time.delta);
+        game->world.player.move(Movement::DOWNWARD, time.delta);
 }
 
 void Window::move(double ix, double iy)
@@ -204,8 +194,8 @@ void Window::move(double ix, double iy)
     if (state.paused)
         return;
 
-    const float x = static_cast<float>(ix);
-    const float y = static_cast<float>(iy);
+    const float32 x = static_cast<float32>(ix);
+    const float32 y = static_cast<float32>(iy);
 
     if (mouse.enter)
     {
@@ -214,8 +204,8 @@ void Window::move(double ix, double iy)
         mouse.enter = false;
     }
 
-    const float xoffset = (x - mouse.lastx) * mouse.settings.sensitivity;
-    const float yoffset = (mouse.lasty - y) * mouse.settings.sensitivity;
+    const float32 xoffset = (x - mouse.lastx) * mouse.settings.sensitivity;
+    const float32 yoffset = (mouse.lasty - y) * mouse.settings.sensitivity;
     mouse.lastx = x;
     mouse.lasty = y;
 
