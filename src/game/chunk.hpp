@@ -2,10 +2,28 @@
 
 #include "block.hpp"
 
+#include <cstddef>
+#include <functional>
+
 struct ChunkPosition
 {
     int32 x;
     int32 z;
+
+    bool operator==(const ChunkPosition &position) const noexcept
+    {
+        return x == position.x && z == position.z;
+    }
+};
+
+struct ChunkPositionHash
+{
+    std::size_t operator()(const ChunkPosition &position) const noexcept
+    {
+        std::size_t h1 = std::hash<int32>()(position.x);
+        std::size_t h2 = std::hash<int32>()(position.z);
+        return h1 ^ (h2 << 1);
+    }
 };
 
 struct Chunk

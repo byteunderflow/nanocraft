@@ -1,40 +1,65 @@
 #include "player.hpp"
 
+void Player::init(World *_world)
+{
+    world = _world;
+    position = glm::vec3(0.0f, 32.0f + settings.height, 0.0f);
+}
+
 void Player::update()
 {
-    chunkX = static_cast<int32>(std::floor(position.x / 16.0f));
-    chunkY = static_cast<int32>(std::floor(position.z / 16.0f));
 }
 
 void Player::move(Movement movement, float32 delta)
 {
+    glm::vec3 destination;
     switch (movement)
     {
     case Movement::FORWARD:
-        position += delta * speed * glm::normalize(glm::vec3(direction.x, 0.0f, direction.z));
+        destination = position + delta * settings.speed * glm::normalize(glm::vec3(direction.x, 0.0f, direction.z));
         break;
     case Movement::BACKWARD:
-        position -= delta * speed * glm::normalize(glm::vec3(direction.x, 0.0f, direction.z));
+        destination = position - delta * settings.speed * glm::normalize(glm::vec3(direction.x, 0.0f, direction.z));
         break;
     case Movement::LEFT:
-        position -= glm::normalize(glm::cross(direction, up)) * delta * speed;
+        destination = position - glm::normalize(glm::cross(direction, up)) * delta * settings.speed;
         break;
     case Movement::RIGHT:
-        position += glm::normalize(glm::cross(direction, up)) * delta * speed;
+        destination = position + glm::normalize(glm::cross(direction, up)) * delta * settings.speed;
         break;
     case Movement::UPWARD:
-        position += up * delta * speed;
+        destination = position + up * delta * settings.speed;
         break;
     case Movement::DOWNWARD:
-        position -= up * delta * speed;
+        destination = position - up * delta * settings.speed;
         break;
+    }
+
+    const int32 x = static_cast<int32>(destination.x);
+    const int32 y = static_cast<int32>(destination.y - settings.height);
+    const int32 z = static_cast<int32>(destination.z);
+
+    if (y < 0 || y > static_cast<int32>(Chunk::CHUNK_Y))
+        return;
+
+    chunk = world->getChunkByWorldPosition(x, z);
+    if (!chunk)
+    {
+        position = destination;
+        return;
+    }
+
+    const Blocks::Block block = world->getBlock(x, y, z);
+    if (!Blocks::isSolid(block))
+    {
+        position = destination;
     }
 }
 
-void Player::look(float32 xoffset, float32 yoffset)
+void Player::look(float32 xOffset, float32 yOffset)
 {
-    yaw += xoffset;
-    pitch += yoffset;
+    yaw += xOffset;
+    pitch += yOffset;
 
     if (yaw > 360.0f)
     {

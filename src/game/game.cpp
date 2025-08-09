@@ -2,6 +2,7 @@
 
 void Game::init()
 {
+    world.init();
     world.generate();
 }
 

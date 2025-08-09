@@ -62,6 +62,7 @@ struct Window
     ~Window();
     void create(int width, int height, const char *title);
     void run();
+    void debug();
     void pause();
     void resume();
     void input();

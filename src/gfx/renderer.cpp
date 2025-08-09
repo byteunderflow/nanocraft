@@ -101,24 +101,28 @@ void Renderer::renderChunk(Chunk &chunk)
                     continue;
 
                 // Optimization: Face culling (render only visible faces)
-                if (z + 1 == Chunk::CHUNK_Z || chunk.getBlock(x, y, z + 1) & Blocks::MASK_TRANSPARENT)
+                if (z + 1 == Chunk::CHUNK_Z || !Blocks::isSolid(chunk.getBlock(x, y, z + 1)))
                     mesh.addFace(x, y, z, type, Blocks::Face::FRONT);
-                if (z == 0 || chunk.getBlock(x, y, z - 1) & Blocks::MASK_TRANSPARENT)
+                if (z == 0 || !Blocks::isSolid(chunk.getBlock(x, y, z - 1)))
                     mesh.addFace(x, y, z, type, Blocks::Face::BACK);
-                if (x == 0 || chunk.getBlock(x - 1, y, z) & Blocks::MASK_TRANSPARENT)
+                if (x == 0 || !Blocks::isSolid(chunk.getBlock(x - 1, y, z)))
                     mesh.addFace(x, y, z, type, Blocks::Face::LEFT);
-                if (x + 1 == Chunk::CHUNK_X || chunk.getBlock(x + 1, y, z) & Blocks::MASK_TRANSPARENT)
+                if (x + 1 == Chunk::CHUNK_X || !Blocks::isSolid(chunk.getBlock(x + 1, y, z)))
                     mesh.addFace(x, y, z, type, Blocks::Face::RIGHT);
-                if (y + 1 == Chunk::CHUNK_Y || chunk.getBlock(x, y + 1, z) & Blocks::MASK_TRANSPARENT)
+                if (y + 1 == Chunk::CHUNK_Y || !Blocks::isSolid(chunk.getBlock(x, y + 1, z)))
                     mesh.addFace(x, y, z, type, Blocks::Face::TOP);
-                if (y == 0 || chunk.getBlock(x, y - 1, z) & Blocks::MASK_TRANSPARENT)
+                if (y == 0 || !Blocks::isSolid(chunk.getBlock(x, y - 1, z)))
                     mesh.addFace(x, y, z, type, Blocks::Face::BOTTOM);
             }
         }
     }
 
     const glm::mat4 model =
-        glm::translate(glm::mat4(1.0f), glm::vec3(static_cast<float32>(chunk.position.x), 0.0f, static_cast<float32>(chunk.position.z)));
+        glm::translate(glm::mat4(1.0f),
+                       glm::vec3(
+                           static_cast<float32>(chunk.position.x) * static_cast<float32>(Chunk::CHUNK_X),
+                           0.0f,
+                           static_cast<float32>(chunk.position.z) * static_cast<float32>(Chunk::CHUNK_Z)));
     program.uniform("model", model);
 
     vbo.fill(mesh.vertices.data(), mesh.vertices.size() * sizeof(Vertex));
@@ -129,9 +133,10 @@ void Renderer::renderChunk(Chunk &chunk)
 
 void Renderer::renderWorld(World &world)
 {
-    for (const std::unique_ptr<Chunk> &chunk : world.chunks)
+    for (const auto &[position, chunk] : world.chunks)
     {
-        renderChunk(*chunk);
+        if (chunk)
+            renderChunk(*chunk);
     }
 }
 
@@ -148,7 +153,7 @@ void Renderer::render(int width, int height, World &world)
     glPolygonMode(GL_FRONT_AND_BACK, settings.wireframe ? GL_LINE : GL_FILL);
 
     const glm::mat4 view =
-        glm::lookAt(world.player.position, world.player.position + world.player.direction, world.player.up);
+        glm::lookAt(world.player->position, world.player->position + world.player->direction, world.player->up);
     program.uniform("view", view);
 
     const glm::mat4 projection =

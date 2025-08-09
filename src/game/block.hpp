@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../types.hpp"
+#include "../util/types.hpp"
 
 namespace Blocks
 {
@@ -27,14 +27,27 @@ namespace Blocks
     using Mask = uint8;
 
     constexpr Mask MASK_TYPE = 15;
-    constexpr Mask MASK_TRANSPARENT = 16;
+    constexpr Mask MASK_SOLID = 16;
 
-    constexpr Block BLOCK_AIR = Type::AIR | MASK_TRANSPARENT;
-    constexpr Block BLOCK_GRASS = Type::GRASS;
-    constexpr Block BLOCK_STONE = Type::STONE;
-    constexpr Block BLOCK_BRICK = Type::BRICK;
-    constexpr Block BLOCK_BEDROCK = Type::BEDROCK;
+    constexpr Block BLOCK_AIR = Type::AIR;
+    constexpr Block BLOCK_GRASS = Type::GRASS | MASK_SOLID;
+    constexpr Block BLOCK_STONE = Type::STONE | MASK_SOLID;
+    constexpr Block BLOCK_BRICK = Type::BRICK | MASK_SOLID;
+    constexpr Block BLOCK_BEDROCK = Type::BEDROCK | MASK_SOLID;
 
-    void setType(Block &block, Type type);
-    Type getType(Block block);
+    inline void setType(Block &block, Type type)
+    {
+        block &= ~MASK_TYPE;
+        block |= static_cast<Mask>(type);
+    }
+
+    inline bool isSolid(Block block)
+    {
+        return static_cast<bool>(block & MASK_SOLID);
+    }
+
+    inline Type getType(Block block)
+    {
+        return static_cast<Type>(block & MASK_TYPE);
+    }
 }

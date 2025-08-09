@@ -105,27 +105,29 @@ void Window::run()
         glfwGetFramebufferSize(handle, &width, &height);
         renderer->render(width, height, game->world);
 
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
+        debug();
 
-        ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
-        ImGui::Begin("Debug", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+        glfwSwapBuffers(handle);
+    }
+}
+
+void Window::debug()
+{
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
+    ImGui::Begin("DEBUG", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+
+    if (ImGui::CollapsingHeader("RENDERER", ImGuiTreeNodeFlags_DefaultOpen))
+    {
         ImGui::Text("Resolution: %dx%d", width, height);
         ImGui::Text("FPS: %d", time.fps);
         ImGui::Text("Render: %.2fms", time.delta * 1000.0f);
-
-        ImGui::Text("XYZ: %f %f %f", game->world.player.position.x, game->world.player.position.y, game->world.player.position.z);
-        ImGui::Text("Chunk XZ: %d %d", game->world.player.chunkX, game->world.player.chunkY);
-        ImGui::Text("Yaw: %fdeg", game->world.player.yaw);
-        ImGui::Text("Pitch: %fdeg", game->world.player.pitch);
-
-        ImGui::SliderFloat("Sensitivity", &mouse.settings.sensitivity, 0.1f, 1.0f);
-        ImGui::SliderFloat("Speed", &game->world.player.speed, 0.0f, 20.0f);
-        ImGui::SliderFloat("FOV (deg)", &renderer->settings.fov, 0.0f, 150.0f);
+        ImGui::SliderFloat("FOV", &renderer->settings.fov, 0.0f, 150.0f);
         ImGui::SliderFloat("Near plane", &renderer->settings.near, 0.1f, 1.0f);
         ImGui::SliderFloat("Far plane", &renderer->settings.far, 10.0f, 1000.0f);
-
         if (ImGui::Button("Wireframe"))
         {
             renderer->settings.wireframe = !renderer->settings.wireframe;
@@ -135,13 +137,28 @@ void Window::run()
             settings.vsync = !settings.vsync;
             glfwSwapInterval(settings.vsync ? 1 : 0);
         }
-
-        ImGui::End();
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-        glfwSwapBuffers(handle);
     }
+
+    if (ImGui::CollapsingHeader("PLAYER", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        ImGui::Text("XYZ: %f %f %f", game->world.player->position.x, game->world.player->position.y, game->world.player->position.z);
+        if (game->world.player->chunk)
+            ImGui::Text("Chunk XZ: %d %d", game->world.player->chunk->position.x, game->world.player->chunk->position.z);
+        ImGui::Text("Yaw: %fdeg", game->world.player->yaw);
+        ImGui::Text("Pitch: %fdeg", game->world.player->pitch);
+        ImGui::SliderFloat("Height", &game->world.player->settings.height, 1.0f, 2.0f);
+        ImGui::SliderFloat("Speed", &game->world.player->settings.speed, 0.0f, 20.0f);
+        ImGui::SliderInt("Render distance", reinterpret_cast<int *>(&game->world.player->settings.renderDistance), 1, 16);
+    }
+
+    if (ImGui::CollapsingHeader("MOUSE", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        ImGui::SliderFloat("Sensitivity", &mouse.settings.sensitivity, 0.1f, 1.0f);
+    }
+
+    ImGui::End();
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void Window::pause()
@@ -176,17 +193,17 @@ void Window::input()
         return;
 
     if (glfwGetKey(handle, GLFW_KEY_W))
-        game->world.player.move(Movement::FORWARD, time.delta);
+        game->world.player->move(Movement::FORWARD, time.delta);
     if (glfwGetKey(handle, GLFW_KEY_S))
-        game->world.player.move(Movement::BACKWARD, time.delta);
+        game->world.player->move(Movement::BACKWARD, time.delta);
     if (glfwGetKey(handle, GLFW_KEY_A))
-        game->world.player.move(Movement::LEFT, time.delta);
+        game->world.player->move(Movement::LEFT, time.delta);
     if (glfwGetKey(handle, GLFW_KEY_D))
-        game->world.player.move(Movement::RIGHT, time.delta);
+        game->world.player->move(Movement::RIGHT, time.delta);
     if (glfwGetKey(handle, GLFW_KEY_SPACE))
-        game->world.player.move(Movement::UPWARD, time.delta);
+        game->world.player->move(Movement::UPWARD, time.delta);
     if (glfwGetKey(handle, GLFW_KEY_LEFT_SHIFT))
-        game->world.player.move(Movement::DOWNWARD, time.delta);
+        game->world.player->move(Movement::DOWNWARD, time.delta);
 }
 
 void Window::move(double ix, double iy)
@@ -204,10 +221,10 @@ void Window::move(double ix, double iy)
         mouse.enter = false;
     }
 
-    const float32 xoffset = (x - mouse.lastx) * mouse.settings.sensitivity;
-    const float32 yoffset = (mouse.lasty - y) * mouse.settings.sensitivity;
+    const float32 xOffset = (x - mouse.lastx) * mouse.settings.sensitivity;
+    const float32 yOffset = (mouse.lasty - y) * mouse.settings.sensitivity;
     mouse.lastx = x;
     mouse.lasty = y;
 
-    game->world.player.look(xoffset, yoffset);
+    game->world.player->look(xOffset, yOffset);
 }
