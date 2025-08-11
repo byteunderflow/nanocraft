@@ -1,8 +1,8 @@
 # VS Code settings folder
 .vscode/
 
-# Binary folder
-bin/
+# Binary
+/nanocraft.exe
 
 # Compiled object files
 *.o
