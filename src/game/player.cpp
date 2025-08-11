@@ -3,7 +3,6 @@
 void Player::init(World *_world)
 {
     world = _world;
-    position = glm::vec3(0.0f, 32.0f + settings.height, 0.0f);
 }
 
 void Player::update()
@@ -39,18 +38,13 @@ void Player::move(Movement movement, float32 delta)
     const int32 y = static_cast<int32>(destination.y - settings.height);
     const int32 z = static_cast<int32>(destination.z);
 
-    if (y < 0 || y > static_cast<int32>(Chunk::CHUNK_Y))
-        return;
-
-    chunk = world->getChunkByWorldPosition(x, z);
-    if (!chunk)
+    if (y < 0)
     {
-        position = destination;
         return;
     }
 
-    const Blocks::Block block = world->getBlock(x, y, z);
-    if (!Blocks::isSolid(block))
+    chunk = world->getChunkByWorldPosition(x, z);
+    if (!chunk || !Blocks::isSolid(world->getBlock(x, y, z)))
     {
         position = destination;
     }

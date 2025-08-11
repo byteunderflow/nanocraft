@@ -127,7 +127,7 @@ void Window::debug()
         ImGui::Text("Render: %.2fms", time.delta * 1000.0f);
         ImGui::SliderFloat("FOV", &renderer->settings.fov, 0.0f, 150.0f);
         ImGui::SliderFloat("Near plane", &renderer->settings.near, 0.1f, 1.0f);
-        ImGui::SliderFloat("Far plane", &renderer->settings.far, 10.0f, 1000.0f);
+        ImGui::SliderFloat("Far plane", &renderer->settings.far, 1000.0f, 5000.0f);
         if (ImGui::Button("Wireframe"))
         {
             renderer->settings.wireframe = !renderer->settings.wireframe;
@@ -147,13 +147,19 @@ void Window::debug()
         ImGui::Text("Yaw: %fdeg", game->world.player->yaw);
         ImGui::Text("Pitch: %fdeg", game->world.player->pitch);
         ImGui::SliderFloat("Height", &game->world.player->settings.height, 1.0f, 2.0f);
-        ImGui::SliderFloat("Speed", &game->world.player->settings.speed, 0.0f, 20.0f);
+        ImGui::SliderFloat("Speed", &game->world.player->settings.speed, 0.0f, 100.0f);
         ImGui::SliderInt("Render distance", reinterpret_cast<int *>(&game->world.player->settings.renderDistance), 1, 16);
     }
 
     if (ImGui::CollapsingHeader("MOUSE", ImGuiTreeNodeFlags_DefaultOpen))
     {
         ImGui::SliderFloat("Sensitivity", &mouse.settings.sensitivity, 0.1f, 1.0f);
+    }
+
+    if (ImGui::CollapsingHeader("GENERATION", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        ImGui::SliderFloat("Scale", &game->world.generator->scale, 0.001f, 0.1f);
+        ImGui::SliderFloat("Height (percent)", &game->world.generator->height, 0.0f, 1.0f);
     }
 
     ImGui::End();

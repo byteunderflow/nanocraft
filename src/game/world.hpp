@@ -2,28 +2,24 @@
 
 #include "chunk.hpp"
 #include "player.hpp"
+#include "worldgen.hpp"
 
 #include <unordered_map>
 
 struct Player;
+struct WorldGenerator;
 
 struct World
 {
     std::unique_ptr<Player> player;
-    std::unordered_map<ChunkPosition, std::unique_ptr<Chunk>, ChunkPositionHash> chunks;
-
-    struct Settings
-    {
-        uint64 seed;
-    };
-    Settings settings;
+    std::unique_ptr<WorldGenerator> generator;
+    std::unordered_map<Chunks::Position, std::unique_ptr<Chunks::Chunk>, Chunks::PositionHash> chunks;
 
     void init();
-    void generateChunk(const ChunkPosition &position);
     void generate();
     void update();
-    Chunk *getChunkByChunkPosition(const ChunkPosition &position) const;
-    Chunk *getChunkByChunkPosition(int32, int32) const;
-    Chunk *getChunkByWorldPosition(int32 x, int32 z) const;
+    Chunks::Chunk *getChunkByChunkPosition(const Chunks::Position &position) const;
+    Chunks::Chunk *getChunkByChunkPosition(int32, int32) const;
+    Chunks::Chunk *getChunkByWorldPosition(int32 x, int32 z) const;
     Blocks::Block getBlock(int32 x, int32 y, int32 z) const;
 };

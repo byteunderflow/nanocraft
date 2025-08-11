@@ -11,66 +11,6 @@
 
 #include "../game/world.hpp"
 
-struct Vertex
-{
-    GLfloat x;
-    GLfloat y;
-    GLfloat z;
-    GLfloat u;
-    GLfloat v;
-};
-
-constexpr const Vertex VERTICES[6][4] = {
-    {
-        {-0.5f, 0.5f, 0.5f, 0.0f, 0.0f}, // Top left
-        {0.5f, 0.5f, 0.5f, 0.0f, 0.0f},  // Top right
-        {0.5f, -0.5f, 0.5f, 0.0f, 0.0f}, // Bottom right
-        {-0.5f, -0.5f, 0.5f, 0.0f, 0.0f} // Bottom left
-    },
-
-    {
-        {-0.5f, 0.5f, -0.5f, 0.0f, 0.0f}, // Top left
-        {0.5f, 0.5f, -0.5f, 0.0f, 0.0f},  // Top right
-        {0.5f, -0.5f, -0.5f, 0.0f, 0.0f}, // Bottom right
-        {-0.5f, -0.5f, -0.5f, 0.0f, 0.0f} // Bottom left
-    },
-
-    {
-        {-0.5f, 0.5f, -0.5f, 0.0f, 0.0f}, // Top left
-        {-0.5f, 0.5f, 0.5f, 0.0f, 0.0f},  // Top right
-        {-0.5f, -0.5f, 0.5f, 0.0f, 0.0f}, // Bottom right
-        {-0.5f, -0.5f, -0.5f, 0.0f, 0.0f} // Bottom left
-    },
-
-    {
-        {0.5f, 0.5f, 0.5f, 0.0f, 0.0f},   // Top left
-        {0.5f, 0.5f, -0.5f, 0.0f, 0.0f},  // Top right
-        {0.5f, -0.5f, -0.5f, 0.0f, 0.0f}, // Bottom right
-        {0.5f, -0.5f, 0.5f, 0.0f, 0.0f}   // Bottom left
-    },
-
-    {
-        {-0.5f, 0.5f, -0.5f, 0.0f, 0.0f}, // Top left
-        {0.5f, 0.5f, -0.5f, 0.0f, 0.0f},  // Top right
-        {0.5f, 0.5f, 0.5f, 0.0f, 0.0f},   // Bottom right
-        {-0.5f, 0.5f, 0.5f, 0.0f, 0.0f}   // Bottom left
-    },
-
-    {
-        {-0.5f, -0.5f, -0.5f, 0.0f, 0.0f}, // Top left
-        {0.5f, -0.5f, -0.5f, 0.0f, 0.0f},  // Top right
-        {0.5f, -0.5f, 0.5f, 0.0f, 0.0f},   // Bottom right
-        {-0.5f, -0.5f, 0.5f, 0.0f, 0.0f}   // Bottom left
-    }};
-
-struct ChunkMesh
-{
-    std::vector<Vertex> vertices;
-    std::vector<GLuint> indices;
-
-    void addFace(uint32 x, uint32 y, uint32 z, Blocks::Type type, Blocks::Face face);
-};
-
 struct Renderer
 {
     Texture atlas;
@@ -84,12 +24,12 @@ struct Renderer
         bool wireframe = false;
         float fov = 60.0f;
         float near = 0.1f;
-        float far = 100.0f;
+        float far = 1000.0f;
     };
     Settings settings;
 
     void init();
-    void renderChunk(Chunk &chunk);
+    void renderChunk(Chunks::Chunk &chunk);
     void renderWorld(World &world);
     void render(int width, int height, World &world);
 };
