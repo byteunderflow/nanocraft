@@ -159,7 +159,6 @@ void Window::debug()
     if (ImGui::CollapsingHeader("GENERATION", ImGuiTreeNodeFlags_DefaultOpen))
     {
         ImGui::SliderFloat("Scale", &game->world.generator->scale, 0.001f, 0.1f);
-        ImGui::SliderFloat("Height (percent)", &game->world.generator->height, 0.0f, 1.0f);
     }
 
     ImGui::End();

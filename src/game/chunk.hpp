@@ -38,47 +38,61 @@ namespace Chunks
 
     struct Mesh
     {
-        static constexpr const Vertex VERTICES[6][4] = {
+        static constexpr const Vertex VERTICES[Blocks::FACE_COUNT][4] = {
             {
-                {-0.5f, 0.5f, 0.5f, 0.0f, 0.0f}, // Top left
-                {0.5f, 0.5f, 0.5f, 0.0f, 0.0f},  // Top right
-                {0.5f, -0.5f, 0.5f, 0.0f, 0.0f}, // Bottom right
+                {-0.5f, 0.5f, 0.5f, 0.0f, 1.0f}, // Top left
+                {0.5f, 0.5f, 0.5f, 1.0f, 1.0f},  // Top right
+                {0.5f, -0.5f, 0.5f, 1.0f, 0.0f}, // Bottom right
                 {-0.5f, -0.5f, 0.5f, 0.0f, 0.0f} // Bottom left
             },
 
             {
-                {-0.5f, 0.5f, -0.5f, 0.0f, 0.0f}, // Top left
-                {0.5f, 0.5f, -0.5f, 0.0f, 0.0f},  // Top right
-                {0.5f, -0.5f, -0.5f, 0.0f, 0.0f}, // Bottom right
+                {-0.5f, 0.5f, -0.5f, 0.0f, 1.0f}, // Top left
+                {0.5f, 0.5f, -0.5f, 1.0f, 1.0f},  // Top right
+                {0.5f, -0.5f, -0.5f, 1.0f, 0.0f}, // Bottom right
                 {-0.5f, -0.5f, -0.5f, 0.0f, 0.0f} // Bottom left
             },
 
             {
-                {-0.5f, 0.5f, -0.5f, 0.0f, 0.0f}, // Top left
-                {-0.5f, 0.5f, 0.5f, 0.0f, 0.0f},  // Top right
-                {-0.5f, -0.5f, 0.5f, 0.0f, 0.0f}, // Bottom right
+                {-0.5f, 0.5f, -0.5f, 0.0f, 1.0f}, // Top left
+                {-0.5f, 0.5f, 0.5f, 1.0f, 1.0f},  // Top right
+                {-0.5f, -0.5f, 0.5f, 1.0f, 0.0f}, // Bottom right
                 {-0.5f, -0.5f, -0.5f, 0.0f, 0.0f} // Bottom left
             },
 
             {
-                {0.5f, 0.5f, 0.5f, 0.0f, 0.0f},   // Top left
-                {0.5f, 0.5f, -0.5f, 0.0f, 0.0f},  // Top right
-                {0.5f, -0.5f, -0.5f, 0.0f, 0.0f}, // Bottom right
+                {0.5f, 0.5f, 0.5f, 0.0f, 1.0f},   // Top left
+                {0.5f, 0.5f, -0.5f, 1.0f, 1.0f},  // Top right
+                {0.5f, -0.5f, -0.5f, 1.0f, 0.0f}, // Bottom right
                 {0.5f, -0.5f, 0.5f, 0.0f, 0.0f}   // Bottom left
             },
 
             {
-                {-0.5f, 0.5f, -0.5f, 0.0f, 0.0f}, // Top left
-                {0.5f, 0.5f, -0.5f, 0.0f, 0.0f},  // Top right
-                {0.5f, 0.5f, 0.5f, 0.0f, 0.0f},   // Bottom right
+                {-0.5f, 0.5f, -0.5f, 0.0f, 1.0f}, // Top left
+                {0.5f, 0.5f, -0.5f, 1.0f, 1.0f},  // Top right
+                {0.5f, 0.5f, 0.5f, 1.0f, 0.0f},   // Bottom right
                 {-0.5f, 0.5f, 0.5f, 0.0f, 0.0f}   // Bottom left
             },
 
             {
-                {-0.5f, -0.5f, -0.5f, 0.0f, 0.0f}, // Top left
-                {0.5f, -0.5f, -0.5f, 0.0f, 0.0f},  // Top right
-                {0.5f, -0.5f, 0.5f, 0.0f, 0.0f},   // Bottom right
+                {-0.5f, -0.5f, -0.5f, 0.0f, 1.0f}, // Top left
+                {0.5f, -0.5f, -0.5f, 1.0f, 1.0f},  // Top right
+                {0.5f, -0.5f, 0.5f, 1.0f, 0.0f},   // Bottom right
                 {-0.5f, -0.5f, 0.5f, 0.0f, 0.0f}   // Bottom left
+            },
+
+            {
+                {-0.5f, 0.5f, 0.5f, 0.0f, 1.0f},  // Top left
+                {0.5f, 0.5f, -0.5f, 1.0f, 1.0f},  // Top right
+                {0.5f, -0.5f, -0.5f, 1.0f, 0.0f}, // Bottom right
+                {-0.5f, -0.5f, 0.5f, 0.0f, 0.0f}  // Bottom left
+            },
+
+            {
+                {0.5f, 0.5f, 0.5f, 0.0f, 1.0f},    // Top left
+                {-0.5f, 0.5f, -0.5f, 1.0f, 1.0f},  // Top right
+                {-0.5f, -0.5f, -0.5f, 1.0f, 0.0f}, // Bottom right
+                {0.5f, -0.5f, 0.5f, 0.0f, 0.0f}    // Bottom left
             }};
 
         std::vector<Vertex> vertices;

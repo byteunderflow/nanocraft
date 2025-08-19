@@ -84,19 +84,25 @@ namespace Chunks
 
                     const Blocks::Type type = Blocks::getType(block);
 
-                    // Optimization: Face culling (render only visible faces)
+                    if (Blocks::isPlant(block))
+                    {
+                        mesh->addFace(x, y, z, type, Blocks::FACE_PLANT1);
+                        mesh->addFace(x, y, z, type, Blocks::FACE_PLANT2);
+                        continue;
+                    }
+
                     if (z + 1 == SIZE_Z || !Blocks::isSolid(getBlock(x, y, z + 1)))
-                        mesh->addFace(x, y, z, type, Blocks::Face::FRONT);
+                        mesh->addFace(x, y, z, type, Blocks::FACE_FRONT);
                     if (z == 0 || !Blocks::isSolid(getBlock(x, y, z - 1)))
-                        mesh->addFace(x, y, z, type, Blocks::Face::BACK);
+                        mesh->addFace(x, y, z, type, Blocks::FACE_BACK);
                     if (x == 0 || !Blocks::isSolid(getBlock(x - 1, y, z)))
-                        mesh->addFace(x, y, z, type, Blocks::Face::LEFT);
+                        mesh->addFace(x, y, z, type, Blocks::FACE_LEFT);
                     if (x + 1 == SIZE_X || !Blocks::isSolid(getBlock(x + 1, y, z)))
-                        mesh->addFace(x, y, z, type, Blocks::Face::RIGHT);
+                        mesh->addFace(x, y, z, type, Blocks::FACE_RIGHT);
                     if (y + 1 == SIZE_Y || !Blocks::isSolid(getBlock(x, y + 1, z)))
-                        mesh->addFace(x, y, z, type, Blocks::Face::TOP);
-                    if (y == 0 || !Blocks::isSolid(getBlock(x, y - 1, z)))
-                        mesh->addFace(x, y, z, type, Blocks::Face::BOTTOM);
+                        mesh->addFace(x, y, z, type, Blocks::FACE_TOP);
+                    if (y > 0 && !Blocks::isSolid(getBlock(x, y - 1, z)))
+                        mesh->addFace(x, y, z, type, Blocks::FACE_BOTTOM);
                 }
             }
         }

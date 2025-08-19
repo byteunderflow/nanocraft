@@ -37,7 +37,7 @@ void Texture::load(const char *path, GLenum format) const
     int width;
     int height;
     int channels;
-    stbi_uc *data = stbi_load(path, &width, &height, &channels, 0);
+    stbi_uc *data = stbi_load(path, &width, &height, &channels, STBI_rgb_alpha);
     if (!data)
     {
         std::cerr << "Unable to load texture " << path << ": " << stbi_failure_reason() << std::endl;
